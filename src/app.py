@@ -1,22 +1,25 @@
 from fastapi import FastAPI, Depends, HTTPException, status,Body
 from sqlalchemy.orm import Session
-from database.db import get_db
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from typing import Optional
+
+from database.db import Base,engine,get_db
 from schemas.user import (
     UserCreate,
     UserLogin,
     UserResponse,
-    ErrorMessage, 
     TokenMod
 )
 from services import auth
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
-from fastapi import Request
-from sqlalchemy.exc import IntegrityError
-from typing import Union
+
+
+
 app = FastAPI()
-from typing import Optional
 templates = Jinja2Templates(directory="templates")
+
+Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
