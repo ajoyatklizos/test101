@@ -19,3 +19,6 @@ class UserResponse(BaseModel):
 
 class ErrorMessage(BaseModel):
     msg: str
+
+class Toekn(BaseModel):
+    token: str

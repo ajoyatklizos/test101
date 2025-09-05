@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status,Body
 from sqlalchemy.orm import Session
 from database.db import get_db
-from schemas.user import UserCreate, UserLogin, UserResponse,ErrorMessage
+from schemas.user import UserCreate, UserLogin, UserResponse,ErrorMessage, Token
 from services import auth
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
@@ -29,8 +29,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post("/refresh")
-def refresh_token(token: str, db: Session = Depends(get_db)):
-    payload = auth.decode_token(token, expected_type="refresh")
+def refresh_token(token: Token, db: Session = Depends(get_db)):
+    payload = auth.decode_token(token.token, expected_type="refresh")
     username: str = payload.get("sub")
     user = db.query(auth.User).filter(auth.User.username == username).first()
     if not user:
