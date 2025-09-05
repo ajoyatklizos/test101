@@ -80,9 +80,7 @@ def decode_token(token: str, expected_type: str = "access"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 
-import pdb
 def authenticate_user(db: Session, login: UserLogin):
-    print(login)
     user = db.query(User).filter(User.username == login.username).first()
     if not user or not verify_password(login.password, user.password):
         return False
