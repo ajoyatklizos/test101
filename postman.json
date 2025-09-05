@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "FastAPI JWT Auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for FastAPI JWT Auth project"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"ajay\",\n  \"email\": \"ajay@example.com\",\n  \"password\": \"ajay123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["register"]
+        }
+      }
+    },
+    {
+      "name": "Login2 (JSON)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"ajay\",\n  \"password\": \"ajay123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/login2",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["login2"]
+        }
+      }
+    },
+    {
+      "name": "Get Users",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{refresh_token}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/refresh",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["refresh"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" }
+  ]
+}
