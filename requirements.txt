@@ -12,3 +12,4 @@ rq
 python-docx
 pdfplumber
 PyPDF2
+prometheus-client
