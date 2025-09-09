@@ -8,3 +8,7 @@ jinja2
 pydantic[email]
 python-multipart
 pydantic_settings
+rq
+python-docx
+pdfplumber
+PyPDF2
