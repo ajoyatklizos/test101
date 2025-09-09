@@ -10,10 +10,11 @@ except ImportError:
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/files")  # use shared volume
+API_KEY=os.getenv("API_KEY", "")
 # os.makedirs(UPLOAD_DIR, exist_ok=True)    
 redis_conn = redis.from_url(REDIS_URL)
 
-client = openai.OpenAI(api_key="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")
+client = openai.OpenAI(api_key=API_KEY)
 
 
 def extract_entities(text: str) -> dict:
