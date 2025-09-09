@@ -1,3 +1,4 @@
 redis
 PyPDF2
 openai
+prometheus-client

@@ -3,6 +3,11 @@ import json
 import time
 import os
 import openai
+from prometheus_client import (
+    Counter, 
+    Histogram,
+    start_http_server
+)
 try:
     import PyPDF2
 except ImportError:
@@ -11,6 +16,11 @@ except ImportError:
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/files")  # use shared volume
 API_KEY=os.getenv("API_KEY", "")
+
+TASKS_PROCESSED = Counter("worker_tasks_total", "Total tasks processed")
+TASKS_FAILED = Counter("worker_tasks_failed", "Total tasks failed")
+TASK_DURATION = Histogram("worker_task_duration_seconds", "Task processing duration (seconds)")
+
 # os.makedirs(UPLOAD_DIR, exist_ok=True)    
 redis_conn = redis.from_url(REDIS_URL)
 
@@ -44,6 +54,7 @@ def extract_entities(text: str) -> dict:
         except Exception as e:
             
             print(response.choices[0].message.content[7:-3])
+            TASKS_FAILED.inc()
             entities = {"error": "Failed to parse entities"}
 
     return entities
@@ -70,20 +81,15 @@ def extract_text(file_path: str) -> str:
 def process_task(task_id: str):
     job_raw = redis_conn.get(f"task:{task_id}")
     if not job_raw:
-        print(f"[Worker] Task {task_id} not found")
         return
 
     job_data = json.loads(job_raw)
     file_path = job_data["file_path"]
 
-    print(f"[Worker] Processing {task_id} -> {file_path}")
 
     # Update status -> processing
     job_data["status"] = "processing"
     redis_conn.set(f"task:{task_id}", json.dumps(job_data))
-
-    # Simulate processing delay
-    time.sleep(2)
 
     # Extract text
     text = extract_text(file_path)
@@ -95,23 +101,23 @@ def process_task(task_id: str):
     job_data["result"] = {"extracted_text": entities}
     redis_conn.set(f"task:{task_id}", json.dumps(job_data))
     
-    print(f"[Worker] Finished {task_id}")
     return entities
 
 
 def main():
     print("[Worker] Started, waiting for tasks...")
+    start_http_server(8001)
     while True:
-        print("Loop started")
+        t1=time.time()
         task = redis_conn.brpop("task_queue", timeout=5)
-        print("fetched")
-
         if task:
             _, task_id = task
             ret=process_task(task_id.decode("utf-8"))  # decode bytes to str
             print(ret)
+            TASKS_PROCESSED.inc()
+            TASK_DURATION.observe(time.time()-t1)
         else:
-            time.sleep(1)
+            continue
 
 
 if __name__ == "__main__":

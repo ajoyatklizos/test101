@@ -51,6 +51,15 @@ services:
       - ./src:/app/src
       - resume_files:/files   # same shared volume
 
+  prometheus:
+    build:
+      context: ./prometheus
+    container_name: prometheus
+    volumes:
+      - prometheus_data:/prometheus
+
+
+
 volumes:
   postgres_data:
   resume_files:
